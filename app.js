@@ -70,7 +70,22 @@ var Strategy = new OpenIDConnectStrategy(
 	}
 ); 
 
-passport.use(Strategy); 
+passport.use(Strategy);
+app.all('*',function(req,res,next){
+	if(req.path === '/login'){
+		return next();
+	}
+	if(req.path === '/auth/sso/callback'){
+		return next();
+	}
+	if(req.isAuthenticated()){
+		return next();
+	}else{
+		req.session.originalUrl = req.originalUrl;
+		res.redirect('/login');
+	}
+});
+
 app.get('/login', passport.authenticate('openidconnect',{})); 
 app.get('/auth/sso/callback',
 	passport.authenticate('openidconnect',{failureRedirect : '/login'}),
