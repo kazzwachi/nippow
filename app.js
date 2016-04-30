@@ -95,6 +95,8 @@ app.get('/auth/sso/callback',
 	}
 );
 
+app.use('/debug',require('./routes/debug'))
+
 app.use('/', routes);
 app.use('/users', users);
 
