@@ -7,8 +7,7 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 
-var roleRepository = require('./lib/roleRepository');
-var acl = require('./lib/acl');
+var authenticate = require('./lib/authenticate');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -74,33 +73,8 @@ var Strategy = new OpenIDConnectStrategy(
 ); 
 
 passport.use(Strategy);
-app.all('*',function(req,res,next){
-	if(req.path === '/login'){
-		return next();
-	}
-	if(req.path === '/auth/sso/callback'){
-		return next();
-	}
-	if(req.isAuthenticated()){
-		if(!req.session.userId){
-			req.session.userId = req.user.id;
-			roleRepository.findByUserid(req.user.id,function(err,roles){
-				if(err){
-					console.log(err);
-				}
-				if(roles && roles.length > 0){
-					acl.addUserRoles(req.user.id,roles[0].value);
-				}
-				return next();
-			});
-		};
-		return next();
-	}else{
-		req.session.originalUrl = req.originalUrl;
-		res.redirect('/login');
-	}
-});
 
+app.all('*',authenticate.ensureAuthenticated);
 app.get('/login', passport.authenticate('openidconnect',{})); 
 app.get('/auth/sso/callback',
 	passport.authenticate('openidconnect',{failureRedirect : '/login'}),
