@@ -7,6 +7,9 @@ var bodyParser = require('body-parser');
 var passport = require('passport');
 var session = require('express-session');
 
+var roleRepository = require('./lib/roleRepository');
+var acl = require('./lib/acl');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -79,6 +82,18 @@ app.all('*',function(req,res,next){
 		return next();
 	}
 	if(req.isAuthenticated()){
+		if(!req.session.userId){
+			req.session.userId = req.user.id;
+			roleRepository.findByUserid(req.user.id,function(err,roles){
+				if(err){
+					console.log(err);
+				}
+				if(roles && roles.length > 0){
+					acl.addUserRoles(req.user.id,roles[0].value);
+				}
+				return next();
+			});
+		};
 		return next();
 	}else{
 		req.session.originalUrl = req.originalUrl;
