@@ -11,6 +11,7 @@ var authenticate = require('./lib/authenticate');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var admin = require('./routes/admin');
 
 var app = express();
 
@@ -49,7 +50,6 @@ var authorization_url = ssoConfig.credentials.authorizationEndpointUrl;
 var token_url = ssoConfig.credentials.tokenEndpointUrl;
 var issuer_id = ssoConfig.credentials.issuerIdentifier;
 var callback_url = 'http://nippow.mybluemix.net/auth/sso/callback';
-
 var OpenIDConnectStrategy = require('passport-idaas-openidconnect').IDaaSOIDCStrategy;
 var Strategy = new OpenIDConnectStrategy(
 	{
@@ -74,20 +74,18 @@ var Strategy = new OpenIDConnectStrategy(
 
 passport.use(Strategy);
 
+app.use('/debug',require('./routes/debug'))
+
 app.all('*',authenticate.ensureAuthenticated);
 app.get('/login', passport.authenticate('openidconnect',{})); 
 app.get('/auth/sso/callback',
 	passport.authenticate('openidconnect',{failureRedirect : '/login'}),
-	function(req,res,next){
-		var redirectUrl = req.session.originalUrl || '/';
-		res.redirect(redirectUrl);
-	}
+	authenticate.ssoCallback
 );
-
-app.use('/debug',require('./routes/debug'))
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/admin', admin);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
