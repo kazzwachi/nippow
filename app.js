@@ -26,6 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/bower_components', express.static( path.join(__dirname, '/bower_components')));
 app.use(cookieParser());
 app.use(session({resave: 'true', saveUninitialized: 'true' , secret: 'sword fish meguro'}));
 app.use(passport.initialize());
@@ -83,9 +84,13 @@ app.get('/auth/sso/callback',
 	authenticate.ssoCallback
 );
 
+//router UI
 app.use('/', routes);
 app.use('/users', users);
 app.use('/admin', admin);
+
+//router API
+app.use('/api/roles', require('./routes/api/roles'))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

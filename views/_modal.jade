@@ -1,0 +1,69 @@
+div#modal_dialog.modal.fade(tabindex="-1",role="dialog")
+	div.modal-dialog
+		div.modal-content
+			div.modal-header
+				button(type="button",data-dismiss="modal",aria-label="Close").close
+					span(aria-hidden="true") &times;
+				h4.modal-title 確認
+			div.modal-body
+				p#modal_message
+			div.modal-footer
+				button#modal_cancel.btn.btn-default(type="button",data-dismiss="modal") CANCEL
+				button#modal_ok.btn.btn-primary(type="button") OK
+				button#modal_yes.btn.btn-default(type="button") YES
+				button#modal_no.btn.btn-default(type="button") NO
+script.
+	var modalConfirm = modalConfirm || {
+		show:function(msg,callback){
+			$('#modal_cancel').css({display:'inline'});
+			$('#modal_ok').css({display:'inline'});
+			$('#modal_yes').css({display:'none'});
+			$('#modal_no').css({display:'none'});
+			if(msg){
+				$('#modal_message').text(msg);
+			}else{
+				$('#modal_message').text('');
+			}
+			if(callback){
+				$('#modal_ok').click(function(){
+					modalConfirm.hide();
+				});
+				$('#modal_ok').click(callback);
+			}else{
+				$('#modal_ok').off('click');
+			}
+			$('#modal_dialog').modal('show');
+		},
+		hide:function(){
+			$('#modal_dialog').modal('hide');
+		}
+	};
+	var modalYesNo = modalYesNo || {
+		show:function(msg,callback1,callback2){
+			$('#modal_cancel').css({display:'none'});
+			$('#modal_ok').css({display:'none'});
+			$('#modal_yes').css({display:'inline'});
+			$('#modal_no').css({display:'inline'});
+			if(msg){
+				$('#modal_message').text(msg);
+			}else{
+				$('#modal_message').text('');
+			}
+			$('#modal_yes').click(function(){
+				modalYesNo.hide();
+			});
+			$('#modal_no').click(function(){
+				modalYesNo.hide();
+			});
+			if(callback1){
+				$('#modal_yes').click(callback1);
+			}
+			if(callback2){
+				$('#modal_no').click(callback2);
+			}
+			$('#modal_dialog').modal('show');
+		},
+		hide:function(){
+			$('#modal_dialog').modal('hide');
+		}
+	};
