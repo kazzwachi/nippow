@@ -6,6 +6,7 @@ var roleRepository = require('../lib/roleRepository');
 /* GET users listing. */
 router.route('/')
 .get(
+//サーバー設置時は以下コメントアウトを解除すること
 //	acl.middleware(),
 	function(req, res, next) {
 		res.send('Administration functionalities');
@@ -13,6 +14,8 @@ router.route('/')
 );
 router.route('/roles')
 .get(
+//サーバー設置時は以下コメントアウトを解除すること
+//	acl.middleware(),
 	function(req, res, next){
 		res.render('admin/roles',{});
 	}

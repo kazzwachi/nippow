@@ -77,7 +77,8 @@ passport.use(Strategy);
 
 app.use('/debug',require('./routes/debug'))
 
-app.all('*',authenticate.ensureAuthenticated);
+//サーバー設置時は以下コメントアウトを解除すること
+//app.all('*',authenticate.ensureAuthenticated);
 app.get('/login', passport.authenticate('openidconnect',{})); 
 app.get('/auth/sso/callback',
 	passport.authenticate('openidconnect',{failureRedirect : '/login'}),
